@@ -37,14 +37,14 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
-    CoverImage: {
+    coverImage: {
       type: String, //cloudinary url
-      required: true,
+      
     },
 
     watchHistory: [
       {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Video",
       },
     ],
@@ -59,15 +59,15 @@ const userSchema = new mongoose.Schema(
     },
   },
   { timestamps: true }
-);
+)
 
-userSchema.pre("save", function() {
+userSchema.pre("save",  async  function(next) {
 
   if(!this.isModified("password")) return next();
 
 
 
-  this.password = bcrypt.hash(this.password,10)
+  this.password = await bcrypt.hash(this.password,10)
   next()
 
 })
@@ -85,7 +85,7 @@ userSchema.methods.genrateAccessToken = function() {
     _id:this._id,
     email:this.email,
     username:this.username,
-    fullName:this.fullname
+    fullName:this.fullName
   },
 
   process.env.ACCESS_TOKEN_SECRET,
